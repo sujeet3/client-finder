@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aurangabad Client Hunter | Website Acquisition Platform</title>
+  <meta name="description" content="Automated website client acquisition engine and conversion diagnostic auditor for Chhatrapati Sambhajinagar (Aurangabad), Maharashtra.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-text">
+          <h1>ClientHunter</h1>
+          <p>Sambhajinagar Edition</p>
+        </div>
+      </div>
+
+      <div class="nav-section-title">Acquisition Suite</div>
+      <ul class="nav-links">
+        <li class="nav-item">
+          <button class="active" data-tab="radar">
+            <span class="nav-icon">🎯</span>
+            <span>Lead Radar & Grid</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button data-tab="auditor">
+            <span class="nav-icon">🔍</span>
+            <span>Instant Site Auditor</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button data-tab="kanban">
+            <span class="nav-icon">📊</span>
+            <span>Pipeline CRM</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button data-tab="scripts">
+            <span class="nav-icon">💬</span>
+            <span>Outreach & Scripts</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button data-tab="proposal">
+            <span class="nav-icon">📑</span>
+            <span>Proposal & Pricing</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button data-tab="playbook">
+            <span class="nav-icon">🗺️</span>
+            <span>Aurangabad Playbook</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="location-badge" style="margin-bottom: 8px;">
+          <span class="status-dot"></span>
+          <span>Target: Chhatrapati Sambhajinagar</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%; justify-content: center; font-size: 11px;" onclick="openApiConfigModal()">
+          ⚙️ <span id="api-backend-status">Cloud API Config</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Body -->
+    <main class="main-content">
+      
+      <!-- Top Stats Bar -->
+      <header class="stats-header">
+        <div class="stat-card">
+          <div class="stat-label">Tracked Businesses</div>
+          <div class="stat-value" id="stat-total-leads">0</div>
+          <div class="stat-sub">Across Aurangabad Hubs</div>
+        </div>
+
+        <div class="stat-card alert">
+          <div class="stat-label">No Website (Hot Leads)</div>
+          <div class="stat-value" id="stat-missing-sites">0</div>
+          <div class="stat-sub">Zero digital presence</div>
+        </div>
+
+        <div class="stat-card warning">
+          <div class="stat-label">Needs Redesign / Broken</div>
+          <div class="stat-value" id="stat-outdated-sites">0</div>
+          <div class="stat-sub">Unsecured or slow sites</div>
+        </div>
+
+        <div class="stat-card success">
+          <div class="stat-label">Est. Pipeline Value</div>
+          <div class="stat-value" id="stat-pipeline-val">₹0</div>
+          <div class="stat-sub">Potential INR Deal Volume</div>
+        </div>
+      </header>
+
+      <!-- TAB 1: Lead Radar & Grid -->
+      <section id="tab-radar" class="tab-view active">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Aurangabad Business Radar</h2>
+            <p>Discover and target businesses in MIDC Waluj, Shendra AURIC, CIDCO, Samarth Nagar & Cannaught Place.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-secondary" id="btn-osm-hunt" onclick="runOsmDiscovery()">
+              🛰️ Live OSM Discovery (Sambhajinagar)
+            </button>
+            <button class="btn btn-secondary" onclick="exportLeadsCsv()">
+              📥 Export CSV
+            </button>
+            <button class="btn btn-primary" onclick="openAddLeadModal()">
+              ➕ Add Business
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <label for="filter-zone">Locality / Zone</label>
+            <select id="filter-zone" class="form-select">
+              <option value="all">All Aurangabad Zones</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-niche">Industry Niche</label>
+            <select id="filter-niche" class="form-select">
+              <option value="all">All Industry Niches</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-status">Digital Status</label>
+            <select id="filter-status" class="form-select">
+              <option value="all">All Statuses</option>
+              <option value="missing">🔴 No Website (Hot Lead)</option>
+              <option value="outdated">🟠 Needs Redesign / Broken</option>
+              <option value="good">🟢 Active Website</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filter-search">Search Keyword</label>
+            <input type="text" id="filter-search" class="form-input" placeholder="Search business, owner, phone...">
+          </div>
+        </div>
+
+        <!-- Grid of Leads -->
+        <div class="leads-grid" id="leads-grid-container">
+          <!-- Dynamically Rendered -->
+        </div>
+      </section>
+
+      <!-- TAB 2: Instant Website Auditor -->
+      <section id="tab-auditor" class="tab-view">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Instant Website Diagnostic Scanner</h2>
+            <p>Perform a deep marketing and technical audit on any local website to uncover revenue leaks for your pitch.</p>
+          </div>
+        </div>
+
+        <div class="auditor-box">
+          <div class="audit-input-bar">
+            <input type="text" id="auditor-url-input" placeholder="Enter target website URL (e.g., siddharthhospital.com or http://...)">
+            <button class="btn btn-primary" id="btn-run-audit" onclick="runAuditor()">
+              Run Live Audit
+            </button>
+          </div>
+          <div style="font-size: 12px; color: var(--text-dim);">
+            💡 <em>Tip: You can test live websites (e.g. google.com, wikipedia.org) or any prospect's domain.</em>
+          </div>
+        </div>
+
+        <!-- Audit Results Panel -->
+        <div id="audit-results-container" class="audit-results-container">
+          <div class="audit-score-hero">
+            <div class="score-circle-wrapper">
+              <div class="score-circle" id="audit-display-score">--</div>
+              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">Opportunity Score</div>
+            </div>
+            <div class="score-details">
+              <h3 id="audit-display-domain">example.com</h3>
+              <p id="audit-display-hook">Analyzing...</p>
+            </div>
+          </div>
+
+          <!-- Technical Breakdown Grid -->
+          <div class="audit-grid">
+            <div class="audit-item-card">
+              <div class="audit-item-icon">🔒</div>
+              <div class="audit-item-info">
+                <h4>SSL Security</h4>
+                <p id="audit-ssl-status">Checking...</p>
+              </div>
+            </div>
+
+            <div class="audit-item-card">
+              <div class="audit-item-icon">📱</div>
+              <div class="audit-item-info">
+                <h4>Mobile Responsiveness</h4>
+                <p id="audit-mobile-status">Checking...</p>
+              </div>
+            </div>
+
+            <div class="audit-item-card">
+              <div class="audit-item-icon">⚡</div>
+              <div class="audit-item-info">
+                <h4>Page Speed & Load Time</h4>
+                <p id="audit-speed-status">Checking...</p>
+              </div>
+            </div>
+
+            <div class="audit-item-card">
+              <div class="audit-item-icon">💬</div>
+              <div class="audit-item-info">
+                <h4>WhatsApp Lead Widget</h4>
+                <p id="audit-wa-status">Checking...</p>
+              </div>
+            </div>
+
+            <div class="audit-item-card">
+              <div class="audit-item-icon">🛠️</div>
+              <div class="audit-item-info">
+                <h4>Tech Stack</h4>
+                <p id="audit-tech-status">Checking...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Identified Revenue Leaks -->
+          <div class="leaks-container">
+            <h3>🚨 Identified Bottlenecks & Revenue Leaks:</h3>
+            <ul class="leaks-list" id="audit-leaks-list">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: Pipeline CRM -->
+      <section id="tab-kanban" class="tab-view">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Sales Pipeline & Deal Flow</h2>
+            <p>Track your outreach stages from initial discovery to contract closing.</p>
+          </div>
+        </div>
+
+        <div class="kanban-board" id="kanban-board-container">
+          <!-- Dynamically populated Kanban columns -->
+        </div>
+      </section>
+
+      <!-- TAB 4: Outreach & Scripts Vault -->
+      <section id="tab-scripts" class="tab-view">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>High-Conversion Outreach & Battlecard Vault</h2>
+            <p>Battle-tested sales scripts specifically calibrated for the business culture of Chhatrapati Sambhajinagar.</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+          <!-- Card 1: WhatsApp Marathi -->
+          <div class="stat-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 16px; margin-bottom: 8px; color: #38bdf8;">
+                💬 WhatsApp Cold Outreach (Marathi - मराठी)
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                Highest response rate for traditional local business owners, doctors, clinics, and Paithani showrooms.
+              </p>
+              <div class="script-box">सस्नेह नमस्कार सर,
+
+मी संभाजीनगरमधील व्यवसाय प्रोफाइल पाहत होतो. *[Business Name]* चे काम खूप उत्तम आहे, परंतु आपल्या व्यवसायाची कोणतीही अधिकृत मोबाईल-फ्रेंडली वेबसाईट गुगलवर उपलब्ध नाही.
+
+स्थानिक ग्राहक आणि बाहेरचे B2B खरेदीदार थेट गुगलवर शोधतात. वेबसाईट नसल्यामुळे अनेक महत्त्वाच्या ऑर्डर्स प्रतिस्पर्ध्यांकडे जातात.
+
+आम्ही आपल्यासाठी एक फास्ट आणि थेट व्हॉट्सॲपवर इन्क्वायरी मिळवून देणारा Demo Mockup तयार केला आहे. तो पाहण्यासाठी आज 5 मिनिटे वेळ मिळू शकेल का?
+
+धन्यवाद,
+वेब व डिजिटल सोल्युशन्स टीम, संभाजीनगर</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); showToast('📋 Marathi script copied!');">
+              📋 Copy Script
+            </button>
+          </div>
+
+          <!-- Card 2: B2B Industrial English -->
+          <div class="stat-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 16px; margin-bottom: 8px; color: #a78bfa;">
+                🏭 B2B Industrial Cold Pitch (MIDC Waluj & Shendra)
+              </h3>
+              <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+                Tailored for Tier-1 & Tier-2 automotive OEM suppliers, pharma plants, and chemical manufacturers.
+              </p>
+              <div class="script-box">Namaskar Sir,
+
+I was reviewing prominent manufacturing units in *Waluj MIDC* and came across *[Company Name]*.
+
+Your precision engineering and plant capabilities are impressive, but currently your digital product catalog & technical RFQ portal are missing on Google.
+
+Tier-1 buyers from Pune, Gujarat, and global OEMs now vet suppliers digitally before issuing RFQs.
+
+We build high-performance B2B websites with ISO spec sheets and automated RFQ quote engines.
+
+Can we share a 2-minute video preview of a custom digital catalog framework we drafted for [Company Name]?
+
+Best regards,
+Industrial Web Architect | Aurangabad</div>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText(this.previousElementSibling.innerText); showToast('📋 B2B script copied!');">
+              📋 Copy Script
+            </button>
+          </div>
+
+          <!-- Card 3: Objection Handling -->
+          <div class="stat-card" style="grid-column: 1/-1;">
+            <h3 style="font-family: var(--font-heading); font-size: 16px; margin-bottom: 14px; color: #f43f5e;">
+              🥊 Aurangabad Market Objection Handling Battlecards
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;">
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--warning);">
+                <strong style="color: #fbbf24; font-size: 13px;">Objection: "JustDial / IndiaMART var ahot, website chi kay garaj?"</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  <em>Counter:</em> "JustDial वर आलेली एक चौकशी एकाच वेळी 8-10 इतर कंपन्यांना दिली जाते, जिथे प्राईस वॉर सुरू होते. तुमच्या स्वतःच्या वेबसाईटवरून आलेली इन्क्वायरी 100% तुमचीच असते आणि तुमचा नफा सुरक्षित राहतो."
+                </p>
+              </div>
+
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--danger);">
+                <strong style="color: #f87171; font-size: 13px;">Objection: "Ek local mulga ₹3,000 madhe website karto ahe."</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  <em>Counter:</em> "₹3,000 मध्ये फक्त एक डमी पेज मिळते जे गुगलवर कधीच रँक होत नाही आणि मोबाईलवर लोड होत नाही. आम्ही वेबसाईटसोबत व्हॉट्सॲप ऑटोमेशन, गुगल रँकिंग आणि 24/7 लीड जनरेटर देतो जेणेकरून 3 महिन्यांत पूर्ण इन्व्हेस्टमेंट वसूल होते."
+                </p>
+              </div>
+
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--info);">
+                <strong style="color: #38bdf8; font-size: 13px;">Objection: "Aata business thand ahe / Season nahi ahe."</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                  <em>Counter:</em> "मार्केट शांत असतानाच डिजिटल तयारी केली पाहिजे. जेव्हा सीझन सुरू होईल तेव्हा तुमची वेबसाईट गुगलवर पहिल्या क्रमांकावर असेल आणि सर्व ग्राहक थेट तुमच्याकडे येतील."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: Proposal & Pricing Builder -->
+      <section id="tab-proposal" class="tab-view">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Instant Proposal & Pricing Calculator</h2>
+            <p>Generate clean, high-ticket proposals with standard Aurangabad market pricing tiers.</p>
+          </div>
+          <div class="view-actions">
+            <button class="btn btn-primary" onclick="window.print()">
+              🖨️ Print / Save as PDF
+            </button>
+          </div>
+        </div>
+
+        <div class="proposal-grid">
+          <!-- Proposal Form Setup -->
+          <div class="proposal-form-card">
+            <h3 style="font-family: var(--font-heading); font-size: 16px; margin-bottom: 16px;">Configure Proposal</h3>
+            
+            <div class="filter-group" style="margin-bottom: 12px;">
+              <label for="prop-client-name">Prospect Business Name</label>
+              <input type="text" id="prop-client-name" class="form-input" value="Marathwada Auto Components">
+            </div>
+
+            <div class="filter-group" style="margin-bottom: 12px;">
+              <label for="prop-client-zone">Locality / MIDC Area</label>
+              <input type="text" id="prop-client-zone" class="form-input" value="Waluj MIDC, Chhatrapati Sambhajinagar">
+            </div>
+
+            <div class="filter-group" style="margin-bottom: 16px;">
+              <label for="prop-package-select">Select Pricing & Service Tier</label>
+              <select id="prop-package-select" class="form-select">
+                <option value="growth">Growth Business & Lead Engine (₹45,000)</option>
+                <option value="starter">Starter Digital Launchpad (₹22,000)</option>
+                <option value="enterprise">Enterprise B2B & Industrial Export Catalog (₹95,000)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Live Printable Proposal Paper -->
+          <div class="proposal-paper" id="proposal-printable-paper">
+            <div style="display: flex; justify-content: space-between; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 16px;">
+              <div>
+                <h2 style="font-size: 20px; font-weight: 800; color: #0f172a;">WEBSITE & GROWTH PROPOSAL</h2>
+                <div style="font-size: 12px; color: #64748b;">Prepared by Web Solutions Architect, Sambhajinagar</div>
+              </div>
+              <div style="text-align: right; font-size: 12px; color: #475569;">
+                <div><strong>Date:</strong> 18 August 2026</div>
+                <div><strong>Valid:</strong> 15 Days</div>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px; font-size: 13px;">
+              <div><strong>Prepared For:</strong> <span id="preview-client-name" style="color: #1e40af; font-weight: 700;">Marathwada Auto Components</span></div>
+              <div><strong>Location:</strong> <span id="preview-client-zone">Waluj MIDC, Chhatrapati Sambhajinagar</span></div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 14px; border-radius: 6px; margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 id="preview-pkg-title" style="font-size: 15px; color: #0f172a;">Professional Business & Lead Engine</h3>
+                <span id="preview-pkg-price" style="font-size: 18px; font-weight: 800; color: #16a34a;">₹45,000</span>
+              </div>
+              <div style="font-size: 12px; color: #64748b; margin-bottom: 12px;"><strong>Estimated Timeline:</strong> <span id="preview-pkg-timeline">10 - 14 Business Days</span></div>
+              
+              <h4 style="font-size: 12px; text-transform: uppercase; color: #475569; margin-bottom: 6px;">Scope of Deliverables:</h4>
+              <ul id="preview-pkg-deliverables" style="font-size: 12px; color: #334155; padding-left: 16px;">
+                <!-- Populated via JS -->
+              </ul>
+            </div>
+
+            <div style="border-top: 1px dashed #cbd5e1; padding-top: 10px; font-size: 11px; color: #64748b; display: flex; justify-content: space-between;">
+              <span>Payment Terms: 50% Advance, 30% Design Approval, 20% Launch</span>
+              <span>All Taxes & High-Speed Cloud Setup Included</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: Market Intelligence Playbook -->
+      <section id="tab-playbook" class="tab-view">
+        <div class="view-header">
+          <div class="view-title">
+            <h2>Aurangabad Market Strategy & Blueprint</h2>
+            <p>Senior Marketer insights on navigating industrial clusters, business psychology, and pricing models.</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div class="stat-card">
+            <h3 style="font-family: var(--font-heading); font-size: 18px; color: #38bdf8; margin-bottom: 10px;">
+              🏭 High-Yield Economic Zones in Chhatrapati Sambhajinagar
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 12px;">
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm);">
+                <strong style="color: #60a5fa;">MIDC Waluj (Industrial Hub)</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                  1,500+ auto component, sheet metal, and tooling MSMEs. Pitch angle: ISO/IATF 16949 product catalog & RFQ inquiry forms for OEM buyers.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm);">
+                <strong style="color: #60a5fa;">Shendra DMIC / AURIC Smart City</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                  State-of-the-art export plants & mega chemical units. High ticket size (₹75k - ₹1.5L+). Pitch angle: International buyer credibility & multi-currency catalogs.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm);">
+                <strong style="color: #60a5fa;">Samarth Nagar & Nirala Bazar</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                  Specialty hospitals, IVF centers, JEE/NEET coaching academies. Pitch angle: 1-Click WhatsApp appointment booking & Google Maps ranking.
+                </p>
+              </div>
+
+              <div style="background: var(--bg-secondary); padding: 14px; border-radius: var(--radius-sm);">
+                <strong style="color: #60a5fa;">Cannaught Place & Paithan Road</strong>
+                <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">
+                  Paithani Silk showrooms, CA firms, solar EPCs. Pitch angle: D2C E-commerce, NRI buyer order funnels, and solar subsidy calculators.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <h3 style="font-family: var(--font-heading); font-size: 18px; color: #34d399; margin-bottom: 10px;">
+              🤝 Local Networking Multipliers in Sambhajinagar
+            </h3>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+              • <strong>CMIA (Chamber of Marathwada Industries & Agriculture):</strong> Attend monthly networking meets at Station Road for direct access to MDs and plant heads.<br>
+              • <strong>MASSIA (Marathwada Small Scale Industries Association):</strong> Key hub for Waluj & Chikalthana factory owners.<br>
+              • <strong>BNI Sambhajinagar (Champions / Royals chapters):</strong> Weekly breakfast referral meetings where business owners pass warm introductions.<br>
+              • <strong>CREDAI Sambhajinagar:</strong> High-ticket real estate developers on Beed Bypass and Jalna Road.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: Pitch Studio -->
+  <div id="pitch-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h3 id="pitch-modal-lead-name">Prospect Business</h3>
+          <p id="pitch-modal-lead-zone" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Zone</p>
+        </div>
+        <button class="modal-close" onclick="document.getElementById('pitch-modal').classList.remove('active')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" data-script-type="whatsapp_mr" onclick="setScriptTab('whatsapp_mr')">मराठी (WhatsApp)</button>
+          <button class="sub-tab-btn" data-script-type="whatsapp_en" onclick="setScriptTab('whatsapp_en')">English B2B</button>
+          <button class="sub-tab-btn" data-script-type="whatsapp_hi" onclick="setScriptTab('whatsapp_hi')">Hinglish</button>
+          <button class="sub-tab-btn" data-script-type="email" onclick="setScriptTab('email')">Cold Email</button>
+          <button class="sub-tab-btn" data-script-type="objections" onclick="setScriptTab('objections')">🥊 Battlecards</button>
+        </div>
+
+        <div class="script-box" id="pitch-script-content">
+          Loading personalized outreach copy...
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="btn btn-secondary" id="pitch-copy-script-btn">
+            📋 Copy Script
+          </button>
+          <button class="btn btn-whatsapp" id="pitch-direct-whatsapp-btn">
+            🚀 Open WhatsApp Direct
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Add Lead -->
+  <div id="add-lead-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add New Aurangabad Business Lead</h3>
+        <button class="modal-close" onclick="document.getElementById('add-lead-modal').classList.remove('active')">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <form id="add-lead-form">
+          <div class="filter-group" style="margin-bottom: 12px;">
+            <label for="new-lead-name">Business Name *</label>
+            <input type="text" id="new-lead-name" class="form-input" required placeholder="e.g. Waluj Precision Tooling Pvt Ltd">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="filter-group">
+              <label for="new-lead-zone">Locality / Zone *</label>
+              <select id="new-lead-zone" class="form-select" required></select>
+            </div>
+            <div class="filter-group">
+              <label for="new-lead-niche">Industry Niche *</label>
+              <select id="new-lead-niche" class="form-select" required></select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="filter-group">
+              <label for="new-lead-phone">Phone / WhatsApp Number</label>
+              <input type="text" id="new-lead-phone" class="form-input" placeholder="+91 98XXXXXXXX">
+            </div>
+            <div class="filter-group">
+              <label for="new-lead-email">Email Address</label>
+              <input type="email" id="new-lead-email" class="form-input" placeholder="contact@example.com">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; margin-bottom: 12px;">
+            <div class="filter-group">
+              <label for="new-lead-website">Website (Leave empty if No Website)</label>
+              <input type="text" id="new-lead-website" class="form-input" placeholder="http://example.com">
+            </div>
+            <div class="filter-group">
+              <label for="new-lead-status">Website Status</label>
+              <select id="new-lead-status" class="form-select">
+                <option value="missing">🔴 No Website (Hot Lead)</option>
+                <option value="outdated">🟠 Needs Redesign / Broken</option>
+                <option value="good">🟢 Active Website</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="filter-group" style="margin-bottom: 12px;">
+            <label for="new-lead-budget">Estimated Budget Tier</label>
+            <select id="new-lead-budget" class="form-select">
+              <option value="Growth (₹35,000 - ₹60,000)">Growth (₹35,000 - ₹60,000)</option>
+              <option value="Enterprise (₹75,000 - ₹1,50,000)">Enterprise (₹75,000 - ₹1,50,000)</option>
+              <option value="Starter (₹15,000 - ₹25,000)">Starter (₹15,000 - ₹25,000)</option>
+            </select>
+          </div>
+
+          <div class="filter-group" style="margin-bottom: 20px;">
+            <label for="new-lead-notes">Recon Notes / Pitch Angle</label>
+            <textarea id="new-lead-notes" class="form-textarea" rows="2" placeholder="e.g. Visited plant in Waluj Sector G. Director Mr. Patil interested in catalog."></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('add-lead-modal').classList.remove('active')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Lead</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
