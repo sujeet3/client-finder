@@ -1,0 +1,5 @@
+name = "client-finder"
+compatibility_date = "2024-09-23"
+
+# Static Assets directory for Cloudflare Worker & Pages
+assets = { directory = "./static" }
