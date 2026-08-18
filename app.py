@@ -37,6 +37,10 @@ if not os.path.exists(STATIC_DIR):
 
 # Mount static files
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+if os.path.exists(os.path.join(STATIC_DIR, "css")):
+    app.mount("/css", StaticFiles(directory=os.path.join(STATIC_DIR, "css")), name="css")
+if os.path.exists(os.path.join(STATIC_DIR, "js")):
+    app.mount("/js", StaticFiles(directory=os.path.join(STATIC_DIR, "js")), name="js")
 
 # Request / Response Schemas
 class LeadCreateSchema(BaseModel):
