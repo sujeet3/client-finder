@@ -4,6 +4,8 @@
  */
 
 // API Base Resolution (Supports Localhost, Cloudflare Pages & Custom Remote Backend)
+const DEFAULT_RENDER_BACKEND = 'https://aurangabad-client-finder-api.onrender.com';
+
 function getApiUrl(endpoint) {
   const customApi = localStorage.getItem('aurangabad_custom_api_base');
   if (customApi && customApi.trim() !== '') {
@@ -11,6 +13,10 @@ function getApiUrl(endpoint) {
   }
   if (window.API_BASE_URL && window.API_BASE_URL.trim() !== '') {
     return window.API_BASE_URL.replace(/\/+$/, '') + endpoint;
+  }
+  // If running on Cloudflare, Workers, Pages or any remote domain, default to Render Backend
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return DEFAULT_RENDER_BACKEND + endpoint;
   }
   return endpoint;
 }
@@ -78,10 +84,11 @@ function switchTab(tabId) {
 
 // API Server Settings (For Cloudflare Pages Deployment)
 function setupApiSettings() {
-  const currentBase = localStorage.getItem('aurangabad_custom_api_base') || '';
+  const currentBase = localStorage.getItem('aurangabad_custom_api_base') || 
+    (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' ? DEFAULT_RENDER_BACKEND : '');
   const apiStatusEl = document.getElementById('api-backend-status');
   if (apiStatusEl) {
-    apiStatusEl.textContent = currentBase ? `Cloud Backend: ${currentBase.replace(/^https?:\/\//, '').substring(0, 20)}...` : 'Local / Relative API';
+    apiStatusEl.textContent = currentBase ? 'Render API: Connected' : 'Local / Relative API';
   }
 }
 
