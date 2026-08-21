@@ -1,5 +1,5 @@
 """
-Aurangabad Website Client Hunter - FastAPI Web Application
+Universal Area Website Client Hunter & Growth Platform - FastAPI Server
 Author: Senior Marketer & Python Architect
 """
 
@@ -16,12 +16,12 @@ import auditor
 import pitch_generator
 
 app = FastAPI(
-    title="Aurangabad Website Client Hunter & Growth Platform",
-    description="Full-stack client acquisition and website auditing platform for Chhatrapati Sambhajinagar",
-    version="2.0.0"
+    title="Client Hunter Pro - Area Lead Discovery Platform",
+    description="Full-stack real-time live business prospecting and website auditing engine",
+    version="3.0.0"
 )
 
-# Enable CORS for Cloudflare Pages and external frontends
+# Enable CORS for external frontends and deployments
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -42,7 +42,7 @@ if os.path.exists(os.path.join(STATIC_DIR, "css")):
 if os.path.exists(os.path.join(STATIC_DIR, "js")):
     app.mount("/js", StaticFiles(directory=os.path.join(STATIC_DIR, "js")), name="js")
 
-# Request / Response Schemas
+# Schemas
 class LeadCreateSchema(BaseModel):
     name: str
     category: str
@@ -56,7 +56,7 @@ class LeadCreateSchema(BaseModel):
     pitch_angle: Optional[str] = "Modern Digital Presence & Lead Generation"
     tags: Optional[List[str]] = []
     notes: Optional[str] = ""
-    opportunity_score: Optional[int] = 85
+    opportunity_score: Optional[int] = 90
 
 class LeadUpdateSchema(BaseModel):
     pipeline_stage: Optional[str] = None
@@ -68,6 +68,12 @@ class LeadUpdateSchema(BaseModel):
     estimated_budget_tier: Optional[str] = None
     tags: Optional[List[str]] = None
 
+class AreaHuntRequestSchema(BaseModel):
+    area: str
+    category: Optional[str] = "all"
+    radius_km: Optional[float] = 3.5
+    keyword: Optional[str] = ""
+
 class AuditRequestSchema(BaseModel):
     url: str
 
@@ -75,25 +81,21 @@ class PitchRequestSchema(BaseModel):
     lead: Dict[str, Any]
     audit: Optional[Dict[str, Any]] = None
 
-class OsmHuntRequestSchema(BaseModel):
-    keyword: Optional[str] = "industrial"
-    zone: Optional[str] = "aurangabad"
-
-# API Endpoints
+# Routes
 @app.get("/")
 async def root():
     index_file = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_file):
         return FileResponse(index_file)
-    return HTMLResponse("<h2>Aurangabad Client Finder App Running...</h2>")
+    return HTMLResponse("<h2>Client Hunter Platform Running...</h2>")
 
 @app.get("/api/zones")
 async def get_zones():
-    return {"zones": hunter_engine.AURANGABAD_ZONES}
+    return {"zones": hunter_engine.get_all_zones()}
 
 @app.get("/api/niches")
 async def get_niches():
-    return {"niches": hunter_engine.AURANGABAD_NICHES}
+    return {"niches": hunter_engine.INDUSTRY_NICHES}
 
 @app.get("/api/leads")
 async def list_leads(
@@ -136,6 +138,25 @@ async def remove_lead(lead_id: str):
 async def get_dashboard_stats():
     return hunter_engine.get_stats()
 
+@app.post("/api/hunt-area")
+async def hunt_area(req: AreaHuntRequestSchema):
+    """
+    100% Live Accurate Area Client Hunting.
+    """
+    result = hunter_engine.hunt_clients_by_area(
+        area=req.area,
+        category=req.category or "all",
+        radius_km=req.radius_km or 3.5,
+        keyword=req.keyword or ""
+    )
+    return result
+
+@app.post("/api/hunt-osm")
+async def legacy_hunt_osm(req: Dict[str, Any] = None):
+    keyword = (req or {}).get("keyword", "")
+    zone = (req or {}).get("zone", "Waluj, Aurangabad")
+    return hunter_engine.hunt_clients_by_area(area=zone, category="all", keyword=keyword)
+
 @app.post("/api/audit")
 async def audit_website(req: AuditRequestSchema):
     report = auditor.run_website_audit(req.url)
@@ -152,29 +173,8 @@ async def export_csv():
     return Response(
         content=csv_content,
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=aurangabad_leads_pipeline.csv"}
+        headers={"Content-Disposition": "attachment; filename=client_hunter_pipeline.csv"}
     )
-
-@app.post("/api/hunt-osm")
-async def hunt_osm_live(req: OsmHuntRequestSchema):
-    scraped = hunter_engine.query_openstreetmap_aurangabad(keyword=req.keyword or "industrial")
-    # Automatically add unique discovered leads into the database
-    existing_leads = hunter_engine.get_all_leads()
-    existing_names = {l["name"].lower() for l in existing_leads}
-    
-    added_count = 0
-    for item in scraped:
-        if item["name"].lower() not in existing_names:
-            hunter_engine.add_lead(item)
-            existing_names.add(item["name"].lower())
-            added_count += 1
-            
-    return {
-        "status": "success",
-        "discovered_count": len(scraped),
-        "newly_added_count": added_count,
-        "sample": scraped[:5]
-    }
 
 if __name__ == "__main__":
     import uvicorn

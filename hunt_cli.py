@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Aurangabad Website Client Hunter - Command Line Interface
+Client Hunter Pro - Command Line Interface
 Author: Senior Marketer & Python Architect
 
 Usage:
-  ./hunt_cli.py list [--zone WALUJ] [--status missing]
+  ./hunt_cli.py hunt --area "Waluj, Aurangabad" [--category healthcare] [--radius 4]
+  ./hunt_cli.py list [--zone "Kothrud"] [--status missing]
   ./hunt_cli.py audit <url>
   ./hunt_cli.py pitch <lead_id>
-  ./hunt_cli.py hunt-live [--keyword auto]
   ./hunt_cli.py stats
 """
 
@@ -19,12 +19,44 @@ import auditor
 import pitch_generator
 
 def print_header(title):
-    print("\n" + "=" * 70)
+    print("\n" + "=" * 75)
     print(f"  🎯 {title}")
-    print("=" * 70)
+    print("=" * 75)
+
+def cmd_hunt(args):
+    print_header(f"Live Accurate Client Hunting in: {args.area}")
+    print(f"📡 Category: {args.category or 'ALL'} | Radius: {args.radius} km | Keyword: {args.keyword or 'None'}")
+    print("⏳ Scanning OpenStreetMap & Geocoding Live POIs...")
+    
+    result = hunter_engine.hunt_clients_by_area(
+        area=args.area,
+        category=args.category or "all",
+        radius_km=float(args.radius or 3.5),
+        keyword=args.keyword or ""
+    )
+    
+    if result.get("status") == "error":
+        print(f"❌ Error: {result.get('message')}")
+        return
+        
+    print(f"✅ Geocoded Area:  {result.get('area_display')}")
+    print(f"📊 Discovered:      {result.get('total_discovered')} real businesses")
+    print(f"🔴 No Website:     {result.get('no_website_count')} HOT LEADS")
+    print(f"🟢 Has Website:    {result.get('has_website_count')} sites for audit")
+    print("-" * 75)
+
+    for l in result.get("leads", []):
+        status_icon = "🔴 NO WEBSITE (HOT)" if l.get("website_status") == "missing" else "🟢 ACTIVE SITE"
+        print(f"\n[{l['id']}] {l['name']}")
+        print(f"   📍 Address:  {l.get('address')}")
+        print(f"   🏭 Sector:   {l.get('category')}")
+        print(f"   📞 Phone:    {l.get('phone') or 'Recon via Maps'}")
+        print(f"   🌐 Website:  {l.get('website') or 'None (Missing)'} [{status_icon}]")
+        print(f"   💰 Budget:   {l.get('estimated_budget_tier')} | Score: {l.get('opportunity_score')}/100")
+        print(f"   🗺️ Recon:    {l.get('gmaps_url')}")
 
 def cmd_list(args):
-    print_header(f"Aurangabad Leads (Zone: {args.zone or 'ALL'}, Status: {args.status or 'ALL'})")
+    print_header(f"Tracked Leads (Zone: {args.zone or 'ALL'}, Status: {args.status or 'ALL'})")
     leads = hunter_engine.filter_leads(
         zone=args.zone,
         website_status=args.status,
@@ -37,13 +69,12 @@ def cmd_list(args):
     for l in leads:
         status_icon = "🔴 NO WEBSITE" if l.get("website_status") == "missing" else ("🟠 OUTDATED" if l.get("website_status") == "outdated" else "🟢 ACTIVE")
         print(f"\n[{l['id']}] {l['name']}")
-        print(f"   📍 Zone:     {l['zone']}")
-        print(f"   🏭 Sector:   {l['category']}")
-        print(f"   📞 Phone:    {l['phone']}")
+        print(f"   📍 Zone:     {l.get('zone')}")
+        print(f"   🏭 Sector:   {l.get('category')}")
+        print(f"   📞 Phone:    {l.get('phone') or 'None'}")
         print(f"   🌐 Status:   {status_icon} ({l.get('website') or 'None'})")
         print(f"   💰 Budget:   {l.get('estimated_budget_tier')}")
         print(f"   ⭐ Score:    {l.get('opportunity_score')}/100 | Stage: [{l.get('pipeline_stage')}]")
-        print(f"   💡 Pitch:    {l.get('pitch_angle')}")
 
 def cmd_audit(args):
     print_header(f"Running Diagnostic Audit on: {args.url}")
@@ -82,19 +113,24 @@ def cmd_pitch(args):
     print("-" * 50)
     print(pitches["whatsapp_mr"])
     
-    print("\n💬 [WHATSAPP - ENGLISH (B2B/INDUSTRIAL)]")
+    print("\n💬 [WHATSAPP - ENGLISH]")
     print("-" * 50)
     print(pitches["whatsapp_en"])
+
+    print("\n💬 [WHATSAPP - HINDI / HINGLISH]")
+    print("-" * 50)
+    print(pitches["whatsapp_hi"])
     
     if pitches.get("whatsapp_mr_url"):
         print(f"\n🚀 1-Click WhatsApp Link:\n{pitches['whatsapp_mr_url']}")
 
 def cmd_stats(args):
-    print_header("Aurangabad Client Hunting Pipeline Stats")
+    print_header("Client Hunting Pipeline Stats")
     stats = hunter_engine.get_stats()
     print(f"📊 Total Leads:          {stats['total_leads']}")
-    print(f"🔴 No Website (Urgent): {stats['no_website_count']}")
+    print(f"🔴 No Website (Hot):    {stats['no_website_count']}")
     print(f"🟠 Needs Redesign:       {stats['needs_redesign_count']}")
+    print(f"🟢 Active Websites:     {stats.get('active_website_count', 0)}")
     print(f"🔥 High Opportunity:    {stats['high_opportunity_count']}")
     print(f"💼 Est. Pipeline Value:  ₹{stats['estimated_pipeline_inr']:,}")
     print("\nPipeline Stages:")
@@ -102,12 +138,19 @@ def cmd_stats(args):
         print(f"   • {stage:15s}: {count}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Aurangabad Client Hunting CLI Engine")
+    parser = argparse.ArgumentParser(description="Client Hunter Pro CLI Engine")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # Hunt command
+    hunt_p = subparsers.add_parser("hunt", help="Live accurate client hunt in any area")
+    hunt_p.add_argument("--area", required=True, help="Area or city name (e.g. 'Waluj, Aurangabad', 'Kothrud, Pune')")
+    hunt_p.add_argument("--category", default="all", help="Industry category")
+    hunt_p.add_argument("--radius", default=3.5, type=float, help="Search radius in km")
+    hunt_p.add_argument("--keyword", default="", help="Optional specific keyword")
 
     # List command
     list_p = subparsers.add_parser("list", help="List tracked leads")
-    list_p.add_argument("--zone", help="Filter by Aurangabad zone")
+    list_p.add_argument("--zone", help="Filter by zone/area")
     list_p.add_argument("--status", help="Filter by website status (missing, outdated, good)")
     list_p.add_argument("--search", help="Keyword search")
 
@@ -123,7 +166,9 @@ def main():
     subparsers.add_parser("stats", help="Show pipeline analytics")
 
     args = parser.parse_args()
-    if args.command == "list":
+    if args.command == "hunt":
+        cmd_hunt(args)
+    elif args.command == "list":
         cmd_list(args)
     elif args.command == "audit":
         cmd_audit(args)

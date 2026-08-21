@@ -36,7 +36,7 @@ def run_website_audit(url_or_domain: str) -> Dict[str, Any]:
                 "No digital showcase for overseas, B2B, or high-budget clients.",
                 "Competitors with modern websites are capturing local search traffic."
             ],
-            "pitch_hook": "Launch a modern, high-converting digital portal to capture untapped Aurangabad & Marathwada market share."
+            "pitch_hook": "Launch a modern, high-converting digital portal to capture untapped local & regional market share."
         }
 
     raw_input = url_or_domain.strip()
@@ -197,7 +197,7 @@ def run_website_audit(url_or_domain: str) -> Dict[str, Any]:
     # WhatsApp & Call
     if not result["has_whatsapp_widget"]:
         score += 15
-        leaks.append("💬 No Instant WhatsApp Button: In Aurangabad, 80%+ B2B/B2C inquiries prefer instant WhatsApp chat over emails.")
+        leaks.append("💬 No Instant WhatsApp Button: Over 80%+ modern B2B/B2C buyers prefer instant WhatsApp chat over emails.")
     else:
         strengths.append("✅ WhatsApp contact pathway exists.")
 
